@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.mp3
+
+# MacOS
+.DS_Store
+
+# Secrets (Her ihtimale karşı)
+.env
+aws_credentials
