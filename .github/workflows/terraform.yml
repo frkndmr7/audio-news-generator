@@ -1,0 +1,28 @@
+name: "Terraform Infrastructure"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**' # Sadece altyapı kodları değiştiğinde çalışır
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init & Apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "eu-central-1"
+        run: |
+          cd infra
+          terraform init
+          terraform apply -auto-approve
