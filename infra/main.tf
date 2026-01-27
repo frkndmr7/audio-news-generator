@@ -114,4 +114,18 @@ resource "aws_s3_bucket_policy" "allow_access_from_cloudfront" {
   })
 }
 
-#hadi çalış2
+# Docker imajlarımızın duracağı depo
+resource "aws_ecr_repository" "app_repo" {
+  name                 = "audio-news-generator"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true # Güvenlik için her yüklemede tarama yapar
+  }
+}
+
+# Çıktı olarak ECR URL'ini alalım (GitHub Actions'da lazım olacak)
+output "ecr_repository_url" {
+  value = aws_ecr_repository.app_repo.repository_url
+}
+#hadi çalış3
