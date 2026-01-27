@@ -128,4 +128,69 @@ resource "aws_ecr_repository" "app_repo" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.app_repo.repository_url
 }
+
+# 1. ECS Cluster
+resource "aws_ecs_cluster" "main" {
+  name = "news-radio-cluster"
+}
+
+# 2. IAM Role: Fargate Görevinin Kendisi İçin (S3, Polly, DynamoDB'ye erişecek)
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+    }]
+  })
+}
+
+# Yetkileri role bağlayalım (Polly, S3, DynamoDB)
+resource "aws_iam_role_policy_attachment" "task_s3" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "task_polly" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonPollyFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "task_dynamo" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+# 3. Task Definition (İş Tanımı)
+resource "aws_ecs_task_definition" "app" {
+  family                   = "news-radio-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_role.arn # Imajı çekmek için
+  task_role_arn            = aws_iam_role.ecs_task_role.arn # Servisleri kullanmak için
+
+  container_definitions = jsonencode([{
+    name      = "news-worker"
+    image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
+    essential = true
+    log_configuration = {
+      log_driver = "awslogs"
+      options = {
+        "awslogs-group"         = "/ecs/news-radio"
+        "awslogs-region"        = "eu-central-1"
+        "awslogs-stream-prefix" = "ecs"
+      }
+    }
+  }])
+}
+
+# CloudWatch Log Grubu (Hataları görmek için şart)
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name = "/ecs/news-radio"
+}
 #hadi çalış3
