@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket         = "frkn-terraform-state-bucket" # Az önce oluşturduğun isim
+    key            = "ses-proje/terraform.tfstate"
+    region         = "eu-central-1"
+    # DynamoDB lock opsiyoneldir, şimdilik bu yeterli.
+  }
+}
+
 # AWS Sağlayıcı Yapılandırması
 provider "aws" {
   region = "eu-central-1" # Tercih ettiğin bölge
