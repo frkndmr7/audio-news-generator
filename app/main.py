@@ -6,6 +6,7 @@ import json
 
 # YAPILANDIRMA (Terraform'da verdiğin isimlerle aynı olmalı)
 S3_BUCKET_NAME = "ses-proje-media-storage-unique-id"
+UI_BUCKET_NAME = "ses-proje-ui-hosting-unique-id"
 DYNAMODB_TABLE = "ProcessedNews"
 RSS_URL = "https://www.webtekno.com/rss.xml" # Örnek bir kaynak
 REGION = "eu-central-1"
@@ -46,10 +47,10 @@ def text_to_speech(text, filename):
         print(f"S3'e yüklendi: {S3_BUCKET_NAME}/{filename}")
 
 # Bu fonksiyonu main.py içine ekle
-def generate_news_list(S3_BUCKET_NAME, CLOUDFRONT_URL):
+def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL):
     s3 = boto3.client('s3')
     # Bucket içindeki dosyaları listele
-    response = s3.list_objects_v2(Bucket=S3_BUCKET_NAME)
+    response = s3.list_objects_v2(Bucket=UI_BUCKET_NAME)
     
     news_items = []
     if 'Contents' in response:
@@ -66,7 +67,7 @@ def generate_news_list(S3_BUCKET_NAME, CLOUDFRONT_URL):
 
     # news.json dosyasını bellekte oluştur ve S3'e yükle
     s3.put_object(
-        Bucket=S3_BUCKET_NAME,
+        Bucket=UI_BUCKET_NAME,
         Key='news.json',
         Body=json.dumps(news_items, ensure_ascii=False),
         ContentType='application/json'
