@@ -67,6 +67,13 @@ resource "aws_cloudfront_origin_access_control" "default" {
 
 # CloudFront Dağıtımı
 resource "aws_cloudfront_distribution" "ui_distribution" {
+
+  origin {
+    domain_name              = aws_s3_bucket.media_bucket.bucket_regional_domain_name
+    origin_id                = "MediaBucketOrigin"
+    origin_access_control_id = aws_cloudfront_origin_access_control.default.id
+  }
+
   origin {
     domain_name              = aws_s3_bucket.ui_bucket.bucket_regional_domain_name
     origin_id                = "S3-UI-Hosting"
@@ -76,6 +83,7 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
+
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -91,6 +99,20 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "*.mp3"
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "MediaBucketOrigin"
+
+    forwarded_values {
+      query_string = false
+      cookies { forward = "none" }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
   }
 
   restrictions {
@@ -118,6 +140,29 @@ resource "aws_s3_bucket_policy" "allow_access_from_cloudfront" {
         Condition = {
           StringEquals = {
             "AWS:SourceArn" = aws_cloudfront_distribution.ui_distribution.arn
+          }
+        }
+      }
+    ]
+  })
+}
+
+# MEDIA BUCKET İÇİN YENİ POLİTİKA
+resource "aws_s3_bucket_policy" "media_access_from_cloudfront" {
+  bucket = aws_s3_bucket.media_bucket.id # DEĞİŞEN: Burası media_bucket olmalı
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = "s3:GetObject"
+        Effect   = "Allow"
+        Resource = "${aws_s3_bucket.media_bucket.arn}/*" # DEĞİŞEN: Media bucket ARN
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.ui_distribution.arn # Aynı CloudFront dağıtımı
           }
         }
       }
