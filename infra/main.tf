@@ -199,4 +199,62 @@ resource "aws_ecs_task_definition" "app" {
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name = "/ecs/news-radio"
 }
+
+# 1. Zamanlayıcı Kuralı (Her sabah 08:00 UTC)
+resource "aws_cloudwatch_event_rule" "every_morning" {
+  name                = "run-news-worker-daily"
+  description         = "Haberleri her sabah sese cevirir"
+  schedule_expression = "cron(0 8 * * ? *)" # Her sabah 08:00
+}
+
+# 2. Zamanlayıcının ECS Task'ını tetiklemesi için gereken Target
+resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
+  rule      = aws_cloudwatch_event_rule.every_morning.name
+  arn       = aws_ecs_cluster.main.arn
+  role_arn  = aws_iam_role.ecs_event_role.arn # Tetikleme yetkisi için yeni rol
+
+  ecs_target {
+    task_count          = 1
+    task_definition_arn = aws_ecs_task_definition.app.arn
+    launch_type         = "FARGATE"
+    network_configuration {
+      subnets          = ["subnet-0eca94079d0b738bc"] # Default subnet ID'lerinden birini yazmalısın
+      assign_public_ip = true
+    }
+  }
+}
+
+# 3. EventBridge'in ECS'i tetikleyebilmesi için IAM Rolü
+resource "aws_iam_role" "ecs_event_role" {
+  name = "ecs-event-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "events.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "ecs_event_policy" {
+  name = "ecs-event-policy"
+  role = aws_iam_role.ecs_event_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "ecs:RunTask"
+      Resource = [aws_ecs_task_definition.app.arn]
+    },
+    {
+      Effect = "Allow"
+      Action = "iam:PassRole"
+      Resource = [aws_iam_role.ecs_task_role.arn]
+    }]
+  })
+}
+
 #hadi çalış3
