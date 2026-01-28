@@ -164,6 +164,12 @@ resource "aws_iam_role_policy_attachment" "task_dynamo" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
+# Bu politika, AWS'nin ECR'dan imaj çekmesini sağlar (ZORUNLUDUR)
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 # 3. Task Definition (İş Tanımı)
 resource "aws_ecs_task_definition" "app" {
   family                   = "news-radio-task"
