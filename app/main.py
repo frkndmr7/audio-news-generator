@@ -2,12 +2,14 @@ import boto3
 import feedparser
 import hashlib
 import os
+import json
 
 # YAPILANDIRMA (Terraform'da verdiğin isimlerle aynı olmalı)
 S3_BUCKET_NAME = "ses-proje-media-storage-unique-id"
 DYNAMODB_TABLE = "ProcessedNews"
 RSS_URL = "https://www.webtekno.com/rss.xml" # Örnek bir kaynak
 REGION = "eu-central-1"
+CLOUDFRONT_URL = "dy39xpxx4bxbc.cloudfront.net"
 
 # AWS Servis Bağlantıları
 s3 = boto3.client('s3', region_name=REGION)
@@ -64,3 +66,36 @@ def start_process():
 
 if __name__ == "__main__":
     start_process()
+
+
+
+# Bu fonksiyonu main.py içine ekle
+def generate_news_list(S3_BUCKET_NAME, CLOUDFRONT_URL):
+    s3 = boto3.client('s3')
+    # Bucket içindeki dosyaları listele
+    response = s3.list_objects_v2(Bucket=S3_BUCKET_NAME)
+    
+    news_items = []
+    if 'Contents' in response:
+        # Dosyaları tarihe göre sırala (en yeni en üstte)
+        sorted_items = sorted(response['Contents'], key=lambda x: x['LastModified'], reverse=True)
+        
+        for obj in sorted_items:
+            if obj['Key'].endswith('.mp3'):
+                news_items.append({
+                    "title": obj['Key'].replace('.mp3', '').replace('_', ' '),
+                    "url": f"https://{CLOUDFRONT_URL}/{obj['Key']}",
+                    "date": obj['LastModified'].strftime("%d.%m.%Y %H:%M")
+                })
+
+    # news.json dosyasını bellekte oluştur ve S3'e yükle
+    s3.put_object(
+        Bucket=S3_BUCKET_NAME,
+        Key='news.json',
+        Body=json.dumps(news_items, ensure_ascii=False),
+        ContentType='application/json'
+    )
+    print("✅ news.json başarıyla güncellendi!")
+
+# main akışının en sonuna ekle:
+# generate_news_list("MEDIA_BUCKET_ADIN", "CLOUDFRONT_URLN")
