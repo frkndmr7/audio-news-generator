@@ -45,30 +45,6 @@ def text_to_speech(text, filename):
         os.remove(filename)
         print(f"S3'e yüklendi: {S3_BUCKET_NAME}/{filename}")
 
-def start_process():
-    feed = feedparser.parse(RSS_URL)
-    
-    # Sadece ilk 3 haberi alalım (Test aşaması için ideal)
-    for entry in feed.entries[:3]:
-        news_id = hashlib.md5(entry.link.encode()).hexdigest()
-        
-        if is_already_processed(news_id):
-            print(f"Atlanıyor (Zaten var): {entry.title}")
-            continue
-
-        # BEDROCK OLMADAN ÖZETLEME: Başlık + Özet (İlk 500 karakter)
-        clean_summary = entry.summary[:500].split('<')[0] # HTML etiketlerini basitçe temizle
-        full_text = f"Haberin başlığı: {entry.title}. Detaylar şöyle: {clean_summary}"
-        
-        filename = f"{news_id}.mp3"
-        text_to_speech(full_text, filename)
-        mark_as_processed(news_id, entry.title)
-
-if __name__ == "__main__":
-    start_process()
-
-
-
 # Bu fonksiyonu main.py içine ekle
 def generate_news_list(S3_BUCKET_NAME, CLOUDFRONT_URL):
     s3 = boto3.client('s3')
@@ -99,3 +75,28 @@ def generate_news_list(S3_BUCKET_NAME, CLOUDFRONT_URL):
 
 # main akışının en sonuna ekle:
 # generate_news_list("MEDIA_BUCKET_ADIN", "CLOUDFRONT_URLN")
+
+def start_process():
+    feed = feedparser.parse(RSS_URL)
+    
+    # Sadece ilk 3 haberi alalım (Test aşaması için ideal)
+    for entry in feed.entries[:3]:
+        news_id = hashlib.md5(entry.link.encode()).hexdigest()
+        
+        if is_already_processed(news_id):
+            print(f"Atlanıyor (Zaten var): {entry.title}")
+            continue
+
+        # BEDROCK OLMADAN ÖZETLEME: Başlık + Özet (İlk 500 karakter)
+        clean_summary = entry.summary[:500].split('<')[0] # HTML etiketlerini basitçe temizle
+        full_text = f"Haberin başlığı: {entry.title}. Detaylar şöyle: {clean_summary}"
+        
+        filename = f"{news_id}.mp3"
+        text_to_speech(full_text, filename)
+        mark_as_processed(news_id, entry.title)
+
+if __name__ == "__main__":
+    start_process()
+
+
+
