@@ -47,10 +47,10 @@ def text_to_speech(text, filename):
         print(f"S3'e yüklendi: {S3_BUCKET_NAME}/{filename}")
 
 # Bu fonksiyonu main.py içine ekle
-def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL):
+def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME):
     s3 = boto3.client('s3')
     # Bucket içindeki dosyaları listele
-    response = s3.list_objects_v2(Bucket=UI_BUCKET_NAME)
+    response = s3.list_objects_v2(Bucket=S3_BUCKET_NAME)
     
     news_items = []
     if 'Contents' in response:
@@ -72,7 +72,7 @@ def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL):
         Body=json.dumps(news_items, ensure_ascii=False),
         ContentType='application/json'
     )
-    print("✅ news.json başarıyla güncellendi!")
+    print("✅ news.json {UI_BUCKET_NAME} başarıyla güncellendi!")
 
 # main akışının en sonuna ekle:
 # generate_news_list("MEDIA_BUCKET_ADIN", "CLOUDFRONT_URLN")
@@ -97,7 +97,14 @@ def start_process():
         mark_as_processed(news_id, entry.title)
 
 if __name__ == "__main__":
+    print("Haber işleme süreci başlıyor...", flush=True)
     start_process()
+    
+    # 2. İŞTE UNUTULAN KISIM: Haber listesini (news.json) oluştur ve UI bucket'ına yükle
+    print("Haber listesi (news.json) güncelleniyor...", flush=True)
+    generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME)
+    
+    print("Tüm işlemler başarıyla tamamlandı.", flush=True)
 
 
 
