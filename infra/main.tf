@@ -30,6 +30,17 @@ resource "aws_s3_bucket_website_configuration" "ui_hosting" {
   }
 }
 
+resource "aws_s3_bucket_cors_configuration" "media_cors" {
+  bucket = aws_s3_bucket.media_bucket.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = ["*"] # Güvenlik için ileride CloudFront URL'ni yazacağız
+    max_age_seconds = 3000
+  }
+}
+
 # 3. Haber Takibi İçin DynamoDB Tablosu [cite: 9, 35]
 resource "aws_dynamodb_table" "news_tracker" {
   name            = "ProcessedNews"

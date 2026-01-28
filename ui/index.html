@@ -1,16 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Ses Proje - Haber Radyosu</title>
-    <style>body { font-family: sans-serif; padding: 20px; }</style>
+    <meta charset="UTF-8">
+    <title>AI Audio News Hub</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 80%; max-width: 600px; margin-top: 50px; }
+        h1 { color: #232f3e; text-align: center; }
+        .audio-item { border-bottom: 1px solid #eee; padding: 1rem 0; display: flex; justify-content: space-between; align-items: center; }
+        audio { height: 30px; }
+    </style>
 </head>
 <body>
-    <h1>Bugünkü Haberler</h1>
-    <div id="playlist">Yükleniyor...</div>
+    <div class="container">
+        <h1>🎙️ Günlük Haber Bültenleri</h1>
+        <div id="news-list">Yükleniyor...</div>
+    </div>
 
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.0.min.js"></script>
     <script>
-        // S3'teki news.json'ı oku ve listele (Mantık bu olacak)
-        // Şimdilik burası sabit kalsın, GitHub Actions'ı kurunca bağlayacağız.
+        // AWS Yapılandırması (Kısıtlı yetkili bir kullanıcı veya Public Read ayarı gerekecek)
+        const bucketName = 'SES_PROJE_MEDIA_BUCKET_ADIN'; // Media bucket adını yaz
+        AWS.config.region = 'eu-central-1'; 
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({ IdentityPoolId: '' }); // Şimdilik basit tutacağız
+
+        const s3 = new AWS.S3();
+        s3.listObjectsV2({ Bucket: bucketName }, (err, data) => {
+            const listDiv = document.getElementById('news-list');
+            if (err) { listDiv.innerHTML = "Hata oluştu!"; return; }
+            
+            listDiv.innerHTML = data.Contents.map(item => `
+                <div class="audio-item">
+                    <span>${item.Key}</span>
+                    <audio controls src="https://BULUT_DAGITIM_URLN/${item.Key}"></audio>
+                </div>
+            `).join('');
+        });
     </script>
 </body>
 </html>
