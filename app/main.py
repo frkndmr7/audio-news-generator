@@ -17,6 +17,7 @@ s3 = boto3.client('s3', region_name=REGION)
 polly = boto3.client('polly', region_name=REGION)
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
 table = dynamodb.Table(DYNAMODB_TABLE)
+bedrock = boto3.client('bedrock-runtime', region_name=REGION)
 
 def is_already_processed(news_id):
     """Haber daha önce işlendi mi?"""
@@ -27,14 +28,34 @@ def mark_as_processed(news_id, title):
     """Haberi işlendi olarak işaretle."""
     table.put_item(Item={'NewsID': news_id, 'Title': title})
 
+def summarize_with_bedrock(text):
+    """Metni AI ile radyo spikeri tonunda özetler."""
+    prompt = f"Aşağıdaki haber metnini bir radyo spikeri için, akıcı ve 2-3 cümlelik kısa bir bültene dönüştür. HTML etiketlerini temizle:\n\n{text}"
+    
+    # Claude 3 Haiku Modeli (Hızlı ve ucuzdur)
+    body = json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 500,
+        "messages": [{"role": "user", "content": prompt}]
+    })
+
+    response = bedrock.invoke_model(
+        modelId="anthropic.claude-3-haiku-20240307-v1:0",
+        body=body
+    )
+    
+    response_body = json.loads(response.get('body').read())
+    return response_body['content'][0]['text']
+
 def text_to_speech(text, filename):
     """Metni Polly ile sese çevir ve S3'e yükle."""
     print(f"Ses dosyası oluşturuluyor: {filename}")
     
     response = polly.synthesize_speech(
+        Engine='neural', # ARTIK ÇOK DAHA NET VE AKICI
         Text=text,
         OutputFormat='mp3',
-        VoiceId='Filiz' # Türkçe kadın sesi (Veya 'Burcu')
+        VoiceId='Burcu' # Veya 'Filiz'. Neural destekleyen bir ses seçilmeli.
     )
 
     if "AudioStream" in response:
@@ -89,11 +110,12 @@ def start_process():
             continue
 
         # BEDROCK OLMADAN ÖZETLEME: Başlık + Özet (İlk 500 karakter)
-        clean_summary = entry.summary[:500].split('<')[0] # HTML etiketlerini basitçe temizle
-        full_text = f"Haberin başlığı: {entry.title}. Detaylar şöyle: {clean_summary}"
-        
+        #clean_summary = entry.summary[:500].split('<')[0] # HTML etiketlerini basitçe temizle
+        #full_text = f"Haberin başlığı: {entry.title}. Detaylar şöyle: {clean_summary}"
+        ai_summary = summarize_with_bedrock(entry.summary)
+
         filename = f"{news_id}.mp3"
-        text_to_speech(full_text, filename)
+        text_to_speech(ai_summary, filename)
         mark_as_processed(news_id, entry.title)
 
 if __name__ == "__main__":

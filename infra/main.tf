@@ -204,6 +204,23 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
+# Bedrock Modellerini Çağırma Yetkisi
+resource "aws_iam_role_policy" "bedrock_policy" {
+  name = "bedrock-access"
+  role = aws_iam_role.ecs_task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = "bedrock:InvokeModel"
+        Effect   = "Allow"
+        Resource = "*" # Güvenlik için belirli model ARN'leri de yazılabilir
+      }
+    ]
+  })
+}
+
 # Yetkileri role bağlayalım (Polly, S3, DynamoDB)
 resource "aws_iam_role_policy_attachment" "task_s3" {
   role       = aws_iam_role.ecs_task_role.name
