@@ -253,26 +253,37 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_role.arn # Imajı çekmek için
   task_role_arn            = aws_iam_role.ecs_task_role.arn # Servisleri kullanmak için
 
-  container_definitions = jsonencode([{
-    name      = "news-worker"
-    name  = "PYTHONUNBUFFERED"
-    value = "1"
-    image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
-    essential = true
-    log_configuration = {
-      log_driver = "awslogs"
-      options = {
-        "awslogs-group"         = "/ecs/news-radio"
-        "awslogs-region"        = "eu-central-1"
-        "awslogs-stream-prefix" = "ecs"
+    container_definitions = jsonencode([
+    {
+      name      = "news-worker"
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
+      essential = true
+      
+      # Ortam değişkenleri mutlaka bu liste formatında olmalı
+      environment = [
+        {
+          name  = "PYTHONUNBUFFERED"
+          value = "1"
+        }
+      ]
+
+      # AWS ECS'nin tanıması için CamelCase isimler ŞART
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/news-radio" # Log grubunla aynı isim olmalı
+          "awslogs-region"        = "eu-central-1"
+          "awslogs-stream-prefix" = "ecs"
+        }
       }
     }
-  }])
+  ])
 }
 
 # CloudWatch Log Grubu (Hataları görmek için şart)
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name = "/ecs/news-radio"
+  retention_in_days = 7
 }
 
 # 1. Zamanlayıcı Kuralı (Her sabah 08:00 UTC)
