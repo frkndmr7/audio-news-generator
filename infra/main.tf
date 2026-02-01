@@ -197,15 +197,9 @@ resource "aws_iam_role" "ecs_task_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action: [
-        "aws-marketplace:ViewSubscriptions",
-        "aws-marketplace:Subscribe"
-      ],
-      Effect: "Allow",
-      Resource: "*"
 
-      #Action = "sts:AssumeRole"
-      #Effect = "Allow"
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
       Principal = { Service = "ecs-tasks.amazonaws.com" }
     }]
   })
@@ -223,6 +217,41 @@ resource "aws_iam_role_policy" "bedrock_policy" {
         Action   = "bedrock:InvokeModel"
         Effect   = "Allow"
         Resource = "*" # Güvenlik için belirli model ARN'leri de yazılabilir
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "ecs_combined_permissions" {
+  name = "ecs-combined-permissions"
+  role = aws_iam_role.ecs_task_role.id # Yukarıdaki role bağlıyoruz
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # 1. Marketplace İzinleri (Marketplace onayı için gereken kısım)
+      {
+        Action = [
+          "aws-marketplace:ViewSubscriptions",
+          "aws-marketplace:Subscribe"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      },
+      # 2. Bedrock İzinleri
+      {
+        Action   = "bedrock:InvokeModel",
+        Effect   = "Allow",
+        Resource = "*"
+      },
+      # 3. Mevcut S3 ve Polly izinlerini de buraya ekleyebilirsin
+      {
+        Action = [
+          "s3:*",
+          "polly:*"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
       }
     ]
   })
