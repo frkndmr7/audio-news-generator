@@ -30,22 +30,32 @@ def mark_as_processed(news_id, title):
 
 def summarize_with_bedrock(text):
     """Metni AI ile radyo spikeri tonunda özetler."""
-    prompt = f"Aşağıdaki haber metnini bir radyo spikeri için, akıcı ve 2-3 cümlelik kısa bir bültene dönüştür. HTML etiketlerini temizle:\n\n{text}"
+    # Küçük bir güvenlik: Metin çok kısaysa özetlemeye gerek yok
+    if len(text) < 100:
+        return text
+
+    print(f"--> Bedrock AI modeline istek gönderiliyor...", flush=True)
     
-    # Claude 3 Haiku Modeli (Hızlı ve ucuzdur)
+    prompt = f"Aşağıdaki haber metnini bir radyo spikeri için, akıcı, doğal ve 2-3 cümlelik kısa bir bültene dönüştür. HTML etiketlerini tamamen temizle ve sadece haberin özünü ver:\n\n{text}"
+    
     body = json.dumps({
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": 500,
         "messages": [{"role": "user", "content": prompt}]
     })
 
-    response = bedrock.invoke_model(
-        modelId="anthropic.claude-3-haiku-20240307-v1:0",
-        body=body
-    )
-    
-    response_body = json.loads(response.get('body').read())
-    return response_body['content'][0]['text']
+    try:
+        response = bedrock.invoke_model(
+            modelId="anthropic.claude-3-haiku-20240307-v1:0",
+            body=body
+        )
+        response_body = json.loads(response.get('body').read())
+        ai_text = response_body['content'][0]['text']
+        print(f"✅ AI başarıyla özetledi: {ai_text[:50]}...", flush=True)
+        return ai_text
+    except Exception as e:
+        print(f"❌ BEDROCK HATASI: {str(e)}. Orijinal metin kullanılıyor.", flush=True)
+        return text[:500] # Hata olursa sistemi durdurma, kırpılmış orijinal metni ver
 
 def text_to_speech(text, filename):
     """Metni Polly ile sese çevir ve S3'e yükle."""
@@ -100,21 +110,22 @@ def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME):
 
 def start_process():
     feed = feedparser.parse(RSS_URL)
+    print(f"RSS kaynağından {len(feed.entries)} haber bulundu.", flush=True)
     
-    # Sadece ilk 3 haberi alalım (Test aşaması için ideal)
     for entry in feed.entries[:3]:
         news_id = hashlib.md5(entry.link.encode()).hexdigest()
         
         if is_already_processed(news_id):
-            print(f"Atlanıyor (Zaten var): {entry.title}")
+            print(f"Atlanıyor (Zaten var): {entry.title}", flush=True)
             continue
 
-        # BEDROCK OLMADAN ÖZETLEME: Başlık + Özet (İlk 500 karakter)
-        #clean_summary = entry.summary[:500].split('<')[0] # HTML etiketlerini basitçe temizle
-        #full_text = f"Haberin başlığı: {entry.title}. Detaylar şöyle: {clean_summary}"
+        print(f"\n--- Yeni Haber İşleniyor: {entry.title} ---", flush=True)
+        
+        # Bedrock'tan özet alıyoruz
         ai_summary = summarize_with_bedrock(entry.summary)
 
         filename = f"{news_id}.mp3"
+        # Özetlenen metni Polly'ye gönderiyoruz
         text_to_speech(ai_summary, filename)
         mark_as_processed(news_id, entry.title)
 
