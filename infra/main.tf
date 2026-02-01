@@ -255,6 +255,8 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([{
     name      = "news-worker"
+    name  = "PYTHONUNBUFFERED"
+    value = "1"
     image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
     essential = true
     log_configuration = {
