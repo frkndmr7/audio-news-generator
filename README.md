@@ -1,3 +1,6 @@
+
+https://dy39xpxx4bxbc.cloudfront.net/
+
 Smart AI News Radio
 
 This project is a fully automated, cloud-based news radio system that summarizes content from your favorite news sources (RSS) using Amazon Bedrock (AI) and delivers it in a professional radio host voice using Amazon Polly (Neural Engine). 🚀
