@@ -78,35 +78,45 @@ def text_to_speech(text, filename):
         print(f"S3'e yüklendi: {S3_BUCKET_NAME}/{filename}")
 
 # Bu fonksiyonu main.py içine ekle
-def generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME):
-    s3 = boto3.client('s3')
-    # Bucket içindeki dosyaları listele
-    response = s3.list_objects_v2(Bucket=S3_BUCKET_NAME)
+def generate_news_list():
+    """S3'teki son 3 kaydı bulur, başlıklarını DynamoDB'den çeker ve news.json hazırlar."""
+    print("Haber listesi (news.json) güncelleniyor...", flush=True)
+    
+    # S3'teki tüm MP3'leri listele
+    response = s3.list_objects_v2(Bucket=MEDIA_BUCKET_NAME)
+    if 'Contents' not in response:
+        return
+
+    # Dosyaları tarihe göre en yeni en üstte olacak şekilde sırala
+    sorted_items = sorted(response['Contents'], key=lambda x: x['LastModified'], reverse=True)
     
     news_items = []
-    if 'Contents' in response:
-        # Dosyaları tarihe göre sırala (en yeni en üstte)
-        sorted_items = sorted(response['Contents'], key=lambda x: x['LastModified'], reverse=True)
-        
-        for obj in sorted_items:
-            if obj['Key'].endswith('.mp3'):
-                news_items.append({
-                    "title": obj['Key'].replace('.mp3', '').replace('_', ' '),
-                    "url": f"https://{CLOUDFRONT_URL}/{obj['Key']}",
-                    "date": obj['LastModified'].strftime("%d.%m.%Y %H:%M")
-                })
+    # Sadece EN YENİ 3 dosyayı işle (Sade ve kompakt görünüm)
+    for obj in sorted_items[:3]:
+        if obj['Key'].endswith('.mp3'):
+            news_id = obj['Key'].replace('.mp3', '')
+            
+            # DynamoDB'den bu ID'ye ait gerçek başlığı çekiyoruz
+            try:
+                db_res = table.get_item(Key={'NewsID': news_id})
+                actual_title = db_res.get('Item', {}).get('Title', 'Haber Başlığı Bulunamadı')
+            except Exception:
+                actual_title = "Bilinmeyen Haber"
 
-    # news.json dosyasını bellekte oluştur ve S3'e yükle
+            news_items.append({
+                "title": actual_title, # Artık ID değil, gerçek başlık!
+                "url": f"https://{CLOUDFRONT_URL}/{obj['Key']}",
+                "date": obj['LastModified'].strftime("%d.%m.%Y %H:%M")
+            })
+
+    # news.json dosyasını UI bucket'ına yükle
     s3.put_object(
         Bucket=UI_BUCKET_NAME,
         Key='news.json',
         Body=json.dumps(news_items, ensure_ascii=False),
         ContentType='application/json'
     )
-    print("✅ news.json {UI_BUCKET_NAME} başarıyla güncellendi!")
-
-# main akışının en sonuna ekle:
-# generate_news_list("MEDIA_BUCKET_ADIN", "CLOUDFRONT_URLN")
+    print(f"✅ news.json başarıyla güncellendi! (Son 3 haber listelendi)", flush=True)
 
 def start_process():
     feed = feedparser.parse(RSS_URL)
