@@ -145,8 +145,8 @@ if __name__ == "__main__":
     
     # 2. İŞTE UNUTULAN KISIM: Haber listesini (news.json) oluştur ve UI bucket'ına yükle
     print("Haber listesi (news.json) güncelleniyor...", flush=True)
-    generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME)
-    
+    #generate_news_list(UI_BUCKET_NAME, CLOUDFRONT_URL, S3_BUCKET_NAME)
+    generate_news_list()
     print("Tüm işlemler başarıyla tamamlandı.", flush=True)
 
 
