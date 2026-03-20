@@ -83,7 +83,7 @@ def generate_news_list():
     print("Haber listesi (news.json) güncelleniyor...", flush=True)
     
     # S3'teki tüm MP3'leri listele
-    response = s3.list_objects_v2(Bucket=MEDIA_BUCKET_NAME)
+    response = s3.list_objects_v2(Bucket=S3_BUCKET_NAME)
     if 'Contents' not in response:
         return
 
