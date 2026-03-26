@@ -2,37 +2,144 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>AI Audio News</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ses Proje | AI Haber Radyosu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: white; max-width: 500px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .news-item { padding: 15px; border-bottom: 1px solid #eee; }
-        audio { width: 100%; margin-top: 10px; }
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        #list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .news-item { 
+            background: var(--card-bg);
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .news-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-item strong { 
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .news-item small { 
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        /* Modern Audio Player Styling */
+        audio { 
+            width: 100%; 
+            height: 40px;
+            border-radius: 8px;
+            filter: sepia(20%) saturate(70%) grayscale(1) contrast(90%) invert(12%); /* Dark mode player look */
+        }
+
+        /* Yükleniyor Durumu */
+        .loader {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 20px 15px; }
+            .news-item { padding: 18px; }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🎙️ Günlük Haber Bültenleri</h2>
-        <div id="list">Yükleniyor...</div>
+    <div class="container">
+        <div class="header">
+            <h1>🎙️ Ses Proje</h1>
+            <p>Yapay zeka tarafından hazırlanan günlük teknoloji özetleri.</p>
+        </div>
+
+        <div id="list">
+            <div class="loader">Haberler hazırlanıyor...</div>
+        </div>
     </div>
 
     <script>
-        // news.json dosyasını kendi CloudFront adresinden çekiyoruz
+        // Veri çekme mantığın aynı kalıyor, sadece HTML şablonunu güncelledik
         fetch('news.json') 
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById('list');
-                if(data.length === 0) { list.innerHTML = "Haber bulunamadı."; return; }
+                if(data.length === 0) { 
+                    list.innerHTML = "<div class='loader'>Şu an için yayında haber bulunmuyor.</div>"; 
+                    return; 
+                }
                 
                 list.innerHTML = data.map(item => `
                     <div class="news-item">
-                        <strong>${item.title}</strong><br>
-                        <small>${item.date}</small><br>
-                        <audio controls><source src="${item.url}" type="audio/mpeg"></audio>
+                        <strong>${item.title}</strong>
+                        <small>📅 ${item.date}</small>
+                        <audio controls preload="none">
+                            <source src="${item.url}" type="audio/mpeg">
+                            Tarayıcınız ses çalma özelliğini desteklemiyor.
+                        </audio>
                     </div>
                 `).join('');
             })
-            .catch(err => document.getElementById('list').innerHTML = "Haberler yüklenemedi.");
+            .catch(err => {
+                document.getElementById('list').innerHTML = "<div class='loader'>Haberlere ulaşılamadı. Lütfen sonra tekrar deneyin.</div>";
+            });
     </script>
 </body>
 </html>
