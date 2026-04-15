@@ -28,6 +28,11 @@ Content is delivered worldwide with low latency via the CloudFront CDN.
 The application is built entirely on serverless and managed services:
 
 News Fetching:
+
+<img width="1440" height="1228" alt="image" src="https://github.com/user-attachments/assets/91255e56-ed83-4109-abee-65eec6b624fc" />
+
+
+
 A Python-based worker scans RSS feeds.
 
 Control Mechanism:
@@ -46,17 +51,19 @@ Orchestration:
 The entire workflow runs periodically on AWS ECS (Fargate).
 
 
+
+
 🛠️ Technology Stack
-Area	Technologies Used
-Cloud Provider	AWS (Amazon Web Services)
-Artificial Intelligence	Amazon Bedrock (Claude 3 Haiku)
-Speech Synthesis	Amazon Polly (Neural Engine)
-Infrastructure (IaC)	Terraform
-Containerization	Docker, Amazon ECR
-Compute	AWS ECS (Fargate)
-Database	Amazon DynamoDB
-Frontend	Vanilla JS, HTML5, CSS3 (Hosted on S3/CloudFront)
-CI/CD	GitHub Actions
+
+Cloud Provider:	AWS (Amazon Web Services)
+Artificial Intelligence:	Amazon Bedrock (Claude 3 Haiku)
+Speech Synthesis:	Amazon Polly (Neural Engine)
+Infrastructure (IaC):	Terraform
+Containerization:	Docker, Amazon ECR
+Compute:	AWS ECS (Fargate)
+Database:	Amazon DynamoDB
+CI/CD:	GitHub Actions
+
 
 
 📦 Setup & Deployment
@@ -69,14 +76,14 @@ terraform apply
 
 The project is integrated with GitHub Actions. Every push to the main branch builds a new Docker image and updates the task running on AWS ECS.
 
-📅 Future Plans (Roadmap)
+
+Future Plans (Roadmap)
 
  Categorization of multiple RSS sources
 
  An admin panel allowing users to add their own RSS links
 
-Note:
-This project is an engineering effort that brings together modern cloud technologies and generative artificial intelligence.
+
 
 
 You can access the site from here:
