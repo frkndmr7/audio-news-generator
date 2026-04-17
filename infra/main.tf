@@ -379,4 +379,9 @@ resource "aws_iam_role_policy" "ecs_event_policy" {
   })
 }
 
+output "ui_bucket_name" {
+  value       = aws_s3_bucket.ui_bucket.id
+  description = "UI dosyalarının yükleneceği bucket ismi"
+}
+
 #hadi çalış3

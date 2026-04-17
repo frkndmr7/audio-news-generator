@@ -29,6 +29,19 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
+      - name: Get UI Bucket Name
+        id: get_bucket
+        run: |
+          # Terraform output'tan bucket ismini al ve GitHub ortam değişkenine yaz
+          BUCKET_NAME=$(terraform output -raw ui_bucket_name)
+          echo "UI_BUCKET=$BUCKET_NAME" >> $GITHUB_ENV
+        working-directory: ./infra
+
+      - name: Sync UI to S3
+        run: |
+          # ui klasöründeki her şeyi S3'e yükle (sync sadece değişenleri atar)
+          aws s3 sync ./ui s3://${{ env.UI_BUCKET }} --delete
+
       # 2. AWS ECR'a Login Ol
       - name: Login to Amazon ECR
         id: login-ecr
