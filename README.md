@@ -1,5 +1,5 @@
 
-https://dy39xpxx4bxbc.cloudfront.net/
+https://d12ok8ikk5mxgz.cloudfront.net/
 
 Smart AI News Radio
 
@@ -77,15 +77,7 @@ terraform apply
 The project is integrated with GitHub Actions. Every push to the main branch builds a new Docker image and updates the task running on AWS ECS.
 
 
-Future Plans (Roadmap)
-
- Categorization of multiple RSS sources
-
- An admin panel allowing users to add their own RSS links
-
-
-
 
 You can access the site from here:
 
-https://dy39xpxx4bxbc.cloudfront.net/
+https://d12ok8ikk5mxgz.cloudfront.net/
