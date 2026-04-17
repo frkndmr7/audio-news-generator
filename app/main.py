@@ -5,8 +5,8 @@ import os
 import json
 
 # YAPILANDIRMA (Terraform'da verdiğin isimlerle aynı olmalı)
-S3_BUCKET_NAME = "ses-proje-media-storage-unique-id"
-UI_BUCKET_NAME = "ses-proje-ui-hosting-unique-id"
+S3_BUCKET_NAME = "ses-proje-media-storage-unique-id-new"
+UI_BUCKET_NAME = "ses-proje-ui-hosting-unique-id-new"
 DYNAMODB_TABLE = "ProcessedNews"
 RSS_URL = "https://www.webtekno.com/rss.xml" # Örnek bir kaynak
 REGION = "eu-central-1"
@@ -46,7 +46,7 @@ def summarize_with_bedrock(text):
 
     try:
         response = bedrock.invoke_model(
-            modelId="anthropic.claude-3-haiku-20240307-v1:0",
+            modelId="anthropic.claude-sonnet-4-5-20250929-v1:0",
             body=body
         )
         response_body = json.loads(response.get('body').read())

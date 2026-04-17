@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "frkn-terraform-state-bucket" # Az önce oluşturduğun isim
+    bucket         = "frkn-terraform-state-bucket-new" # Az önce oluşturduğun isim
     key            = "ses-proje/terraform.tfstate"
     region         = "eu-central-1"
     # DynamoDB lock opsiyoneldir, şimdilik bu yeterli.
@@ -14,12 +14,12 @@ provider "aws" {
 
 # 1. Ses Dosyaları İçin S3 Bucket 
 resource "aws_s3_bucket" "media_bucket" {
-  bucket = "ses-proje-media-storage-unique-id" # Bu isim dünyada eşsiz olmalı
+  bucket = "ses-proje-media-storage-unique-id-new" # Bu isim dünyada eşsiz olmalı
 }
 
 # 2. Web Arayüzü (UI) İçin S3 Bucket
 resource "aws_s3_bucket" "ui_bucket" {
-  bucket = "ses-proje-ui-hosting-unique-id"
+  bucket = "ses-proje-ui-hosting-unique-id-new"
 }
 
 # S3 Web Hosting Ayarı
@@ -340,7 +340,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
     task_definition_arn = aws_ecs_task_definition.app.arn
     launch_type         = "FARGATE"
     network_configuration {
-      subnets          = ["subnet-0eca94079d0b738bc"] # Default subnet ID'lerinden birini yazmalısın
+      subnets          = ["subnet-0af3804228cc8fa96"] # Default subnet ID'lerinden birini yazmalısın
       assign_public_ip = true
     }
   }
