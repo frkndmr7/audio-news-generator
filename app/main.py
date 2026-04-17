@@ -10,7 +10,7 @@ UI_BUCKET_NAME = "ses-proje-ui-hosting-unique-id-new"
 DYNAMODB_TABLE = "ProcessedNews"
 RSS_URL = "https://www.webtekno.com/rss.xml" # Örnek bir kaynak
 REGION = "eu-central-1"
-CLOUDFRONT_URL = "dy39xpxx4bxbc.cloudfront.net"
+CLOUDFRONT_URL = "d12ok8ikk5mxgz.cloudfront.net"
 
 # AWS Servis Bağlantıları
 s3 = boto3.client('s3', region_name=REGION)
