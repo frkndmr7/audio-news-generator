@@ -43,7 +43,7 @@ jobs:
       - name: Sync UI to S3
         run: |
           # ui klasöründeki her şeyi S3'e yükle (sync sadece değişenleri atar)
-          aws s3 sync ./ui s3://${{ env.UI_BUCKET }} --delete
+          aws s3 sync ./ui s3://${{ env.UI_BUCKET }} --delete --exclude "news.json" --exclude "favicon.ico"
 
       # 2. AWS ECR'a Login Ol
       - name: Login to Amazon ECR
