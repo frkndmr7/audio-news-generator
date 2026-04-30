@@ -29,7 +29,8 @@ The application is built entirely on serverless and managed services:
 
 News Fetching:
 
-<img width="1440" height="1228" alt="image" src="https://github.com/user-attachments/assets/91255e56-ed83-4109-abee-65eec6b624fc" />
+<img width="1440" height="1160" alt="image" src="https://github.com/user-attachments/assets/f59f1596-d290-48d0-9ea4-53dc1d2a9711" />
+
 
 
 
