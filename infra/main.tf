@@ -340,7 +340,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
     task_definition_arn = aws_ecs_task_definition.app.arn
     launch_type         = "FARGATE"
     network_configuration {
-      subnets          = ["subnet-0af3804228cc8fa96"] # Default subnet ID'lerinden birini yazmalısın
+      subnets          = ["subnet-058e23bee65e304ff"] # Default subnet ID'lerinden birini yazmalısın
       assign_public_ip = true
     }
   }
