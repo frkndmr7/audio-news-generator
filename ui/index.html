@@ -3,115 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ses Proje | AI Haber Özeti</title>
+    <title>Ses Proje | AI Haber Akışı</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #09090b;          /* Derin Antrasit */
-            --card: #18181b;        /* Kart Arka Planı */
-            --card-hover: #1c1c1f;
-            --border: #27272a;      /* İnce Kenarlık */
-            --primary: #818cf8;     /* Muted Indigo */
-            --text-title: #fafafa;
-            --text-body: #a1a1aa;
+            --bg-forest: #112211;     /* Derin Orman Yeşili */
+            --card-cream: #fdfbf7;    /* Yumuşak Krem */
+            --accent-orange: #e67e22; /* Şık Turuncu */
+            --text-on-green: #e1e8e1; 
+            --text-on-cream: #1a2e1a;
+            --border-cream: #f3eee7;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-body);
-            line-height: 1.5;
+            background-color: var(--bg-forest);
+            color: var(--text-on-green);
+            line-height: 1.6;
             padding: 80px 24px;
-            -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 680px; margin: 0 auto; }
+        .container { max-width: 700px; margin: 0 auto; }
 
-        /* HEADER */
-        header { text-align: left; margin-bottom: 64px; }
+        /* HEADER SECTION */
+        header { 
+            text-align: center; 
+            margin-bottom: 80px; 
+        }
         
-        .brand {
-            display: flex;
+        .logo-area {
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background-color: var(--card-cream);
+            border-radius: 20px;
+            font-size: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid var(--accent-orange);
         }
 
-        .brand-icon {
-            color: var(--primary);
-            font-size: 24px;
+        h1 { 
+            font-size: 36px; 
+            font-weight: 800; 
+            letter-spacing: -1px; 
+            color: var(--card-cream);
+            margin-bottom: 12px;
         }
-
-        h1 { font-size: 24px; font-weight: 600; color: var(--text-title); letter-spacing: -0.02em; }
-        .tagline { font-size: 15px; color: var(--text-body); font-weight: 400; }
+        
+        .tagline { 
+            color: var(--accent-orange); 
+            font-size: 18px; 
+            font-weight: 400;
+            opacity: 0.9;
+        }
 
         /* NEWS CARDS */
-        .news-list { display: flex; flex-direction: column; gap: 24px; }
+        .news-list { display: flex; flex-direction: column; gap: 32px; }
 
         .news-card {
-            background-color: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            transition: all 0.2s ease-in-out;
+            background-color: var(--card-cream);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-cream);
         }
 
         .news-card:hover {
-            border-color: #3f3f46;
-            background-color: var(--card-hover);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
         }
 
         .meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
+            display: inline-block;
+            background-color: rgba(230, 126, 34, 0.1);
+            color: var(--accent-orange);
             font-size: 12px;
-            font-weight: 500;
-            color: var(--primary);
-            letter-spacing: 0.05em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
         }
 
         h2 {
-            font-size: 19px;
-            font-weight: 500;
-            color: var(--text-title);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-on-cream);
             line-height: 1.4;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
 
-        /* PLAYER CUSTOMIZATION */
-        .player-box {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 8px;
+        /* PLAYER BOX */
+        .audio-container {
+            background-color: #f1ede6;
+            border-radius: 18px;
+            padding: 12px;
+            border: 1px solid #e5dfd5;
         }
 
         audio {
             width: 100%;
-            height: 36px;
-            filter: invert(100%) hue-rotate(180deg) brightness(0.9);
-            opacity: 0.8;
+            height: 40px;
+            /* Turuncu ve Yeşil tonlarıyla uyum için hafif filtre */
+            filter: sepia(0.2) saturate(1.2) contrast(1.1);
         }
 
-        /* STATUS */
-        #status { text-align: center; margin-top: 40px; font-size: 14px; }
+        /* STATUS & FOOTER */
+        #status-msg { text-align: center; color: var(--card-cream); font-weight: 300; }
 
         .footer {
-            margin-top: 80px;
-            padding-top: 32px;
-            border-top: 1px solid var(--border);
-            font-size: 13px;
-            text-align: left;
-            opacity: 0.5;
+            text-align: center;
+            margin-top: 100px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-on-green);
+            font-size: 14px;
+            opacity: 0.6;
         }
 
         @media (max-width: 600px) {
-            body { padding: 40px 20px; }
-            .news-card { padding: 24px; }
+            body { padding: 40px 16px; }
+            .news-card { padding: 28px; }
+            h1 { font-size: 28px; }
         }
     </style>
 </head>
@@ -119,19 +140,17 @@
 
 <div class="container">
     <header>
-        <div class="brand">
-            <span class="brand-icon">🎙️</span>
-            <h1>Ses Proje</h1>
-        </div>
-        <p class="tagline">Günün teknoloji özetleri. Yapay zeka ile seslendirildi.</p>
+        <div class="logo-area">🎙️</div>
+        <h1>Ses Proje</h1>
+        <p class="tagline">Yapay Zeka ile Doğal Haber Deneyimi</p>
     </header>
 
     <main id="news-container" class="news-list">
-        <div id="status">Haberler hazırlanıyor...</div>
+        <div id="status-msg">Haberler toplanıyor...</div>
     </main>
 
     <footer class="footer">
-        &copy; 2026 Ses Proje. Tüm hakları saklıdır.
+        &copy; 2026 Ses Proje. Doğadan ilham alan teknoloji.
     </footer>
 </div>
 
@@ -139,14 +158,14 @@
     async function fetchNews() {
         const container = document.getElementById('news-container');
         try {
-            // S3'ten news.json dosyasını çekiyoruz
+            // S3'teki news.json'ı tazelemek için timestamp kullanıyoruz
             const response = await fetch('news.json?t=' + Date.now());
             if (!response.ok) throw new Error();
             const news = await response.json();
             container.innerHTML = '';
 
             if (news.length === 0) {
-                container.innerHTML = '<div id="status">Henüz yeni bir özet bulunmuyor.</div>';
+                container.innerHTML = '<div id="status-msg">Henüz yeni bir haber özeti bulunmuyor.</div>';
                 return;
             }
 
@@ -154,20 +173,22 @@
                 const card = document.createElement('div');
                 card.className = 'news-card';
                 
-                // Tarih düzeltme mantığı
-                let displayDate = "Bugün";
+                // Python timestamp formatını JS için düzeltme
+                let dateStr = "GÜNCEL";
                 if(item.timestamp) {
                     const cleanTs = item.timestamp.replace(' ', 'T');
                     const d = new Date(cleanTs);
                     if (!isNaN(d)) {
-                        displayDate = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+                        dateStr = d.toLocaleDateString('tr-TR', { 
+                            day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' 
+                        });
                     }
                 }
 
                 card.innerHTML = `
-                    <div class="meta"><span>●</span> ${displayDate}</div>
+                    <div class="meta">${dateStr}</div>
                     <h2>${item.title}</h2>
-                    <div class="player-box">
+                    <div class="audio-container">
                         <audio controls>
                             <source src="${item.url}" type="audio/mpeg">
                         </audio>
@@ -176,7 +197,7 @@
                 container.appendChild(card);
             });
         } catch (e) {
-            container.innerHTML = '<div id="status">Şu an haberlere ulaşılamıyor.</div>';
+            container.innerHTML = '<div id="status-msg">Haber akışına ulaşılamıyor.</div>';
         }
     }
     fetchNews();
