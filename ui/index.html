@@ -3,179 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ses Proje | Profesyonel AI Haber Özeti</title>
+    <title>Ses Proje | AI Haber Özeti</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* YENI RENK PALETI - SOFT & MODERN NAVY/ORANGE */
-            --primary-navy: #1e3a8a;    /* Derin Lacivert (Başlıklar ve İkon) */
-            --accent-amber: #f59e0b;    /* Yumuşak Kehribar/Turuncu (Tarihler ve Vurgular) */
-            
-            --bg-page: #f8fafc;         /* Çok Hafif Warm Grey (Sayfa Arka Planı) */
-            --bg-card: #ffffff;         /* Saf Beyaz (Kartlar) */
-            
-            --text-main: #374151;       /* Koyu Gri-Lacivert (Metinler) */
-            --text-muted: #6b7280;     /* Orta Gri (Tagline) */
-            --border-color: #e2e8f0;    /* İnce Kenarlık */
-            
-            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 20px 25px -5px rgba(30, 58, 138, 0.1), 0 10px 10px -5px rgba(30, 58, 138, 0.04);
+            --bg: #09090b;          /* Derin Antrasit */
+            --card: #18181b;        /* Kart Arka Planı */
+            --card-hover: #1c1c1f;
+            --border: #27272a;      /* İnce Kenarlık */
+            --primary: #818cf8;     /* Muted Indigo */
+            --text-title: #fafafa;
+            --text-body: #a1a1aa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 60px 20px;
+            background-color: var(--bg);
+            color: var(--text-body);
+            line-height: 1.5;
+            padding: 80px 24px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-        }
+        .container { max-width: 680px; margin: 0 auto; }
 
-        /* HEADER & BRANDING */
-        header {
-            text-align: center;
-            margin-bottom: 70px;
-        }
-
-        .logo-section {
-            display: inline-flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 12px;
-        }
-
-        .logo-box {
-            background-color: var(--primary-navy);
-            color: white;
-            width: 50px;
-            height: 50px;
+        /* HEADER */
+        header { text-align: left; margin-bottom: 64px; }
+        
+        .brand {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 14px;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .brand-icon {
+            color: var(--primary);
             font-size: 24px;
-            box-shadow: 0 4px 14px 0 rgba(30, 58, 138, 0.3);
         }
 
-        h1 {
-            font-size: 34px;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            color: var(--primary-navy);
-        }
+        h1 { font-size: 24px; font-weight: 600; color: var(--text-title); letter-spacing: -0.02em; }
+        .tagline { font-size: 15px; color: var(--text-body); font-weight: 400; }
 
-        .tagline {
-            color: var(--text-muted);
-            font-size: 17px;
-            font-weight: 400;
-        }
+        /* NEWS CARDS */
+        .news-list { display: flex; flex-direction: column; gap: 24px; }
 
-        /* HABER KARTLARI */
         .news-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 35px;
-            margin-bottom: 35px;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Sol kenarda ince bir turuncu çizgi vurgusu */
-        .news-card::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 4px;
-            background-color: var(--accent-amber);
-            border-radius: 4px 0 0 4px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.2s ease-in-out;
         }
 
         .news-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(30, 58, 138, 0.2);
+            border-color: #3f3f46;
+            background-color: var(--card-hover);
         }
 
-        .news-card:hover::before {
-            opacity: 1;
-        }
-
-        .card-meta {
-            margin-bottom: 15px;
+        .meta {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .date-tag {
+            gap: 8px;
+            margin-bottom: 16px;
             font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-amber);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            background-color: #fffbeb; /* Çok hafif amber arka plan */
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-weight: 500;
+            color: var(--primary);
+            letter-spacing: 0.05em;
         }
 
         h2 {
-            font-size: 23px;
-            font-weight: 700;
-            color: var(--primary-navy); /* Lacivert Başlık */
-            line-height: 1.35;
-            margin-bottom: 25px;
-            letter-spacing: -0.01em;
+            font-size: 19px;
+            font-weight: 500;
+            color: var(--text-title);
+            line-height: 1.4;
+            margin-bottom: 24px;
         }
 
-        /* SES OYNATICI (CUSTOM STYLING OLMADAN, WRAPPER ILE ŞIKLAŞTIRMA) */
-        .audio-wrapper {
-            background-color: #f1f5f9; /* Slate 100 */
-            padding: 15px;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
+        /* PLAYER CUSTOMIZATION */
+        .player-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 8px;
         }
 
         audio {
             width: 100%;
-            height: 40px;
+            height: 36px;
+            filter: invert(100%) hue-rotate(180deg) brightness(0.9);
+            opacity: 0.8;
         }
 
-        /* FOOTER */
+        /* STATUS */
+        #status { text-align: center; margin-top: 40px; font-size: 14px; }
+
         .footer {
-            text-align: center;
             margin-top: 80px;
-            font-size: 15px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            padding-top: 30px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            text-align: left;
+            opacity: 0.5;
         }
 
-        /* LOADING & ERROR */
-        #status-message {
-            text-align: center;
-            padding: 50px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 650px) {
-            body { padding: 40px 15px; }
-            h1 { font-size: 28px; }
-            .news-card { padding: 25px; }
-            h2 { font-size: 19px; }
+        @media (max-width: 600px) {
+            body { padding: 40px 20px; }
+            .news-card { padding: 24px; }
         }
     </style>
 </head>
@@ -183,19 +119,19 @@
 
 <div class="container">
     <header>
-        <div class="logo-section">
-            <div class="logo-box">🎙️</div>
-            <h1>Smart Radio</h1>
+        <div class="brand">
+            <span class="brand-icon">🎙️</span>
+            <h1>Ses Proje</h1>
         </div>
-        <p class="tagline">Yapay zeka destekli profesyonel teknoloji özeti.</p>
+        <p class="tagline">Günün teknoloji özetleri. Yapay zeka ile seslendirildi.</p>
     </header>
 
-    <main id="news-container">
-        <div id="status-message">Haber akışı yükleniyor...</div>
+    <main id="news-container" class="news-list">
+        <div id="status">Haberler hazırlanıyor...</div>
     </main>
 
     <footer class="footer">
-        &copy; 2026 Smart Radio. Tüm hakları saklıdır.
+        &copy; 2026 Ses Proje. Tüm hakları saklıdır.
     </footer>
 </div>
 
@@ -203,15 +139,14 @@
     async function fetchNews() {
         const container = document.getElementById('news-container');
         try {
-            // Cache-breaking için timestamp eklendi
+            // S3'ten news.json dosyasını çekiyoruz
             const response = await fetch('news.json?t=' + Date.now());
-            if (!response.ok) throw new Error('Network error');
-            
+            if (!response.ok) throw new Error();
             const news = await response.json();
             container.innerHTML = '';
 
             if (news.length === 0) {
-                container.innerHTML = '<div id="status-message">Henüz yeni bir haber özeti bulunmuyor.</div>';
+                container.innerHTML = '<div id="status">Henüz yeni bir özet bulunmuyor.</div>';
                 return;
             }
 
@@ -219,46 +154,32 @@
                 const card = document.createElement('div');
                 card.className = 'news-card';
                 
-                // Tarih Hatası Düzeltmesi (ISO formatına zorlama)
-                let displayDate = "Yeni Haber";
+                // Tarih düzeltme mantığı
+                let displayDate = "Bugün";
                 if(item.timestamp) {
-                    const cleanTimestamp = item.timestamp.replace(' ', 'T');
-                    const dateObj = new Date(cleanTimestamp);
-                    
-                    if (!isNaN(dateObj)) {
-                        displayDate = dateObj.toLocaleDateString('tr-TR', { 
-                            day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' 
-                        });
+                    const cleanTs = item.timestamp.replace(' ', 'T');
+                    const d = new Date(cleanTs);
+                    if (!isNaN(d)) {
+                        displayDate = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
                     }
                 }
 
                 card.innerHTML = `
-                    <div class="card-meta">
-                        <span class="date-tag">${displayDate}</span>
-                    </div>
+                    <div class="meta"><span>●</span> ${displayDate}</div>
                     <h2>${item.title}</h2>
-                    <div class="audio-wrapper">
+                    <div class="player-box">
                         <audio controls>
                             <source src="${item.url}" type="audio/mpeg">
-                            Tarayıcınız ses öğesini desteklemiyor.
                         </audio>
                     </div>
                 `;
                 container.appendChild(card);
             });
-        } catch (error) {
-            console.error('Hata:', error);
-            container.innerHTML = `
-                <div id="status-message">
-                    <p style="color:#ef4444;">Haber akışına şu an ulaşılamıyor.</p>
-                    <p style="font-size:14px; margin-top:10px;">Lütfen daha sonra tekrar deneyin.</p>
-                </div>
-            `;
+        } catch (e) {
+            container.innerHTML = '<div id="status">Şu an haberlere ulaşılamıyor.</div>';
         }
     }
-
     fetchNews();
 </script>
-
 </body>
 </html>
