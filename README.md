@@ -3,7 +3,7 @@ https://d12ok8ikk5mxgz.cloudfront.net/
 
 # 📻 Smart News
 
-> **Smart News**, favori RSS haber kaynaklarınızı Amazon Bedrock (AI) kullanarak özetleyen ve Amazon Polly'nin en gelişmiş Nöral Ses motoruyla profesyonel bir radyo sunucusu tonunda dinleyiciye ulaştıran tam otomatize, bulut tabanlı bir radyo sistemidir. 🚀
+**Smart News**, favori RSS haber kaynaklarınızı Amazon Bedrock (AI) kullanarak özetleyen ve Amazon Polly'nin en gelişmiş Nöral Ses motoruyla profesyonel bir radyo sunucusu tonunda dinleyiciye ulaştıran tam otomatize, bulut tabanlı bir radyo sistemidir. 🚀
 
 ---
 
