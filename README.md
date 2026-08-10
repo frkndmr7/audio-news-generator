@@ -67,7 +67,8 @@ Navigate to the infrastructure folder and apply the Terraform configuration:
 ```bash
 cd infra
 terraform init
-terraform apply
+terraform apply ```
+```
 
 ### 2. Application Deployment
 
